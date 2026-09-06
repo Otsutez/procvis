@@ -82,7 +82,8 @@ class PageMapEntry:
 
 @dataclass
 class MapsEntry:
-    address: tuple[int, int]
+    start: int
+    end: int
     perms: str
     offset: int
     dev: str
@@ -292,8 +293,8 @@ class MemoryParser:
         if match := pattern.match(self.curr):
             self.accept()
             groups = match.groupdict()
-            addr1 = int(groups["addr1"], 16)
-            addr2 = int(groups["addr2"], 16)
+            start = int(groups["addr1"], 16)
+            end = int(groups["addr2"], 16)
             perms = groups["perms"]
             offset = int(groups["offset"], 16)
             dev = groups["dev"]
@@ -301,7 +302,8 @@ class MemoryParser:
             pathname = groups["pathname"]
 
             return MapsEntry(
-                address=(addr1, addr2),
+                start=start,
+                end=end,
                 perms=perms,
                 offset=offset,
                 dev=dev,
@@ -347,8 +349,12 @@ class MemoryParser:
         return map
 
 
-if __name__ == "__main__":
+def main():
     pid = int(input("pid: "))
     process_data: ProcessData = MemoryReader.get_process_data(pid)
     for map in process_data.maps_entries:
         print(map)
+
+
+if __name__ == "__main__":
+    main()
