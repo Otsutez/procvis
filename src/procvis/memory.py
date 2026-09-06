@@ -92,7 +92,6 @@ class MapsEntry:
 
 @dataclass
 class ProcessData:
-    name: str
     maps_entries: list[MapsEntry]
     pagemap_entries: dict[int, PageMapEntry]
 
@@ -180,7 +179,32 @@ class MemoryReader:
             stat = MemoryReader.read_stat(pid)
             if stat:
                 result.append(stat)
+
         return result
+
+    @staticmethod
+    def run_reader(pids: str) -> str:
+        process = subprocess.run(
+            ["build/bin/reader"],
+            input=pids,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return process.stdout
+
+    @staticmethod
+    def get_process_data(pid: int) -> ProcessData:
+        pids = str(pid) + "\n"
+        try:
+            output = MemoryReader.run_reader(pids)
+        except subprocess.CalledProcessError as e:
+            exception = GetProcessMapError(e.stderr)
+            raise exception
+        parser = MemoryParser()
+        map = parser.parse_output(output)
+        print(parser.curr)
+        return map[pid]
 
 
 class MemoryParser:
@@ -221,7 +245,7 @@ class MemoryParser:
             (?P<soft>[01])\s       # soft dirty bit
             (?P<filepage>[01])\s   # file page bit
             (?P<swapped>[01])\s    # swapped bit
-            (?P<present>[01])    # present bit
+            (?P<present>[01])      # present bit
             $
             """,
             re.VERBOSE,
@@ -254,13 +278,13 @@ class MemoryParser:
         pattern = re.compile(
             r"""
             ^
-            (?P<addr1>[0-9a-f]+)-        # first address
-            (?P<addr2>[0-9a-f]+)\s       # second address
+            (?P<addr1>[0-9a-f]+)-              # first address
+            (?P<addr2>[0-9a-f]+)\s             # second address
             (?P<perms>[r\-][w\-][x\-][s\-p])\s # permissions
-            (?P<offset>\d+)\s               # offset
-            (?P<dev>\d+:\d+)\s              # device
-            (?P<inode>\d+)\s+               # inode
-            (?P<pathname>.*)                # pathname
+            (?P<offset>[0-9a-f]+)\s            # offset
+            (?P<dev>\d+:\d+)\s                 # device
+            (?P<inode>\d+)\s+                  # inode
+            (?P<pathname>.*)                   # pathname
             $
             """,
             re.VERBOSE,
@@ -271,7 +295,7 @@ class MemoryParser:
             addr1 = int(groups["addr1"], 16)
             addr2 = int(groups["addr2"], 16)
             perms = groups["perms"]
-            offset = int(groups["offset"])
+            offset = int(groups["offset"], 16)
             dev = groups["dev"]
             inode = int(groups["inode"])
             pathname = groups["pathname"]
@@ -311,7 +335,6 @@ class MemoryParser:
         while (pid := self.parse_pid()) is not None:
             maps_entries: list[MapsEntry] = []
             pagemap_entries: dict[int, PageMapEntry] = {}
-            name = self.get_process_name(pid)
 
             while (maps_entry := self.parse_maps_entry()) is not None:
                 maps_entries.append(maps_entry)
@@ -319,31 +342,13 @@ class MemoryParser:
                     vaddr, pagemap_entry = data
                     pagemap_entries[vaddr] = pagemap_entry
             map[pid] = ProcessData(
-                name=name, maps_entries=maps_entries, pagemap_entries=pagemap_entries
+                maps_entries=maps_entries, pagemap_entries=pagemap_entries
             )
         return map
 
-    def run_reader(self, pids: str) -> str:
-        process = subprocess.run(
-            ["build/bin/reader"],
-            input=pids,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        return process.stdout
 
-    # def get_process_map(self) -> dict[int, ProcessData]:
-    #     """
-    #     Returns a dictionary of pids mapped to it's memory data.
-    #     Raise GetProcessMapError when failed to get input
-    #     """
-    #     pids = self.get_pids_str()
-    #     print(pids)
-    #     try:
-    #         output = self.run_reader(pids)
-    #     except subprocess.CalledProcessError as e:
-    #         exception = GetProcessMapError(e.stderr)
-    #         raise exception
-    #     map = self.parse_output(output)
-    #     return map
+if __name__ == "__main__":
+    pid = int(input("pid: "))
+    process_data: ProcessData = MemoryReader.get_process_data(pid)
+    for map in process_data.maps_entries:
+        print(map)

@@ -27,8 +27,9 @@ Output:
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <limits.h>
 
-#define LINE_LENGTH 128
+#define LINE_LENGTH PATH_MAX + 128
 
 /* page_map_entry struct and pagemap_get_entry() function taken from stack overflow https://stackoverflow.com/questions/6284810/proc-pid-pagemaps-and-proc-pid-maps-linux */
 typedef struct {
