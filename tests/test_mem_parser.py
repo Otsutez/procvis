@@ -9,32 +9,49 @@ from procvis.memory import (
 
 test_data: list[tuple[str, dict[int, ProcessData]]] = [
     ("", {}),
+    (
+        "1\n7f3703e00000-7f3704000000 rw-s 12bc90000 00:06 338                       /dev/dri/renderD128",
+        {
+            1: ProcessData(
+                maps_entries=[
+                    MapsEntry(
+                        address=(0x7F3703E00000, 0x7F3704000000),
+                        perms="rw-s",
+                        offset=0x12BC90000,
+                        dev="00:06",
+                        inode=338,
+                        pathname="",
+                    )
+                ],
+                pagemap_entries={},
+            )
+        },
+    ),
     ("invalid", {}),
-    ("1", {1: ProcessData(name="", maps_entries=[], pagemap_entries={})}),
+    ("1", {1: ProcessData(maps_entries=[], pagemap_entries={})}),
     (
         "1\ninvalid",
-        {1: ProcessData(name="", maps_entries=[], pagemap_entries={})},
+        {1: ProcessData(maps_entries=[], pagemap_entries={})},
     ),
     (
         "1\ninvalid\ninvalid",
-        {1: ProcessData(name="", maps_entries=[], pagemap_entries={})},
+        {1: ProcessData(maps_entries=[], pagemap_entries={})},
     ),
     (
         "1\n2\n3\n4\n5\n6",
         {
-            1: ProcessData(name="", maps_entries=[], pagemap_entries={}),
-            2: ProcessData(name="", maps_entries=[], pagemap_entries={}),
-            3: ProcessData(name="", maps_entries=[], pagemap_entries={}),
-            4: ProcessData(name="", maps_entries=[], pagemap_entries={}),
-            5: ProcessData(name="", maps_entries=[], pagemap_entries={}),
-            6: ProcessData(name="", maps_entries=[], pagemap_entries={}),
+            1: ProcessData(maps_entries=[], pagemap_entries={}),
+            2: ProcessData(maps_entries=[], pagemap_entries={}),
+            3: ProcessData(maps_entries=[], pagemap_entries={}),
+            4: ProcessData(maps_entries=[], pagemap_entries={}),
+            5: ProcessData(maps_entries=[], pagemap_entries={}),
+            6: ProcessData(maps_entries=[], pagemap_entries={}),
         },
     ),
     (
         "1\n55eea76c6000-55eea76dd000 r--p 00000000 103:02 9183882                   /usr/bin/zsh",
         {
             1: ProcessData(
-                name="",
                 maps_entries=[
                     MapsEntry(
                         address=(0x55EEA76C6000, 0x55EEA76DD000),
@@ -53,7 +70,6 @@ test_data: list[tuple[str, dict[int, ProcessData]]] = [
         "1\n55eea76c6000-55eea76dd000 r--p 00000000 103:02 9183882                   /usr/bin/zsh\n7ffe4ba6d000 1ef2a5 1 0 0 1",
         {
             1: ProcessData(
-                name="",
                 maps_entries=[
                     MapsEntry(
                         address=(0x55EEA76C6000, 0x55EEA76DD000),
@@ -80,7 +96,6 @@ test_data: list[tuple[str, dict[int, ProcessData]]] = [
         "1\n55eea76c6000-55eea76dd000 r--p 00000000 103:02 9183882                   /usr/bin/zsh\n7ffe4ba6d000 1ef2a5 1 0 0 1\n7ffe4ba7d000 1ef2a5 1 0 0 1\n55eea76c6000-55eea76dd000 r--p 00000000 103:02 9183882                   /usr/bin/zsh\n7ffe4ba8d000 1ef2a5 1 0 0 1\n7ffe4ba9d000 1ef2a5 1 0 0 1",
         {
             1: ProcessData(
-                name="",
                 maps_entries=[
                     MapsEntry(
                         address=(0x55EEA76C6000, 0x55EEA76DD000),

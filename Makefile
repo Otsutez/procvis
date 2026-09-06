@@ -1,7 +1,7 @@
 CC := gcc
 CFLAGS := -Wall -Wextra -O2
 
-SRC := src/ram_visualiser/reader.c
+SRC := src/procvis/reader.c
 BIN := build/bin/reader
 
 .PHONY: all clean
