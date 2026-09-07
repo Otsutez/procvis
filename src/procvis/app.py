@@ -1,6 +1,7 @@
+from curses import KEY_F10
 from typing import override
 
-from textual import work
+from textual import events, work
 from textual.app import App, ComposeResult
 from textual.containers import CenterMiddle
 from textual.reactive import reactive
@@ -67,11 +68,18 @@ class ProcessVisualiserApp(App):
         if event.pid is not None and event.pid in self.stats:
             if self.timer:
                 self.timer.pause()
-            self.query_one(ProcessView).stat = self.stats[event.pid]
+            process_view = self.query_one(ProcessView)
+            process_view.stat = self.stats[event.pid]
+            process_view.focus()
             self.query_one(ContentSwitcher).current = "process-view"
             self.log(f"{event.pid} selected")
         else:
             self.log(f"Failed to enter process view for {event.pid}, no data")
+
+    def on_process_view_go_back(self, event: ProcessView.GoBack):
+        content_switcher = self.query_one(ContentSwitcher)
+        content_switcher.current = "process-selector"
+        self.query_one(ProcessSelector).focus()
 
 
 if __name__ == "__main__":

@@ -3,16 +3,17 @@ from math import log2
 from typing import override
 
 from rich.text import Text
-from textual import Logger, work
-from textual.app import ComposeResult, RenderResult
-from textual.containers import CenterMiddle, Grid
+from textual import work
+from textual.app import ComposeResult
+from textual.containers import CenterMiddle, Container, Grid
 from textual.events import Resize
+from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Static, TabbedContent, TabPane
 from textual.worker import get_current_worker
 
-from procvis.memory import MapsEntry, MemoryReader, PageMapEntry, ProcessData, Stat
+from procvis.memory import MapsEntry, MemoryReader, ProcessData, Stat
 
 """
 Process View Design
@@ -51,7 +52,7 @@ class VMBlock(Static):
     is_vertical: reactive[bool] = reactive(False)
     render_text: Text = Text()
 
-    BACKGROUND_CHAR: str = "░"
+    BACKGROUND_CHAR: str = "█"
     UNMAPPED_COLOR: str = "#778899"
     CODE_COLOR: str = "#4C78A8"
     RO_DATA_COLOR: str = "#59A14F"
@@ -125,7 +126,6 @@ class VMBlock(Static):
         total_size = self.get_render_list_total_size(render_list)
         scale = area / total_size
 
-        self.log(render_list)
         self.log(f"total_size: {total_size}")
         self.log(f"area: {area}")
         self.log(f"scale: {scale}")
@@ -193,17 +193,38 @@ class VMView(CenterMiddle):
         block.styles.height = blk_height
 
 
-class ProcessInfo(Widget):
-    pass
+class ProcessInfo(Container):
+    def on_mount(self) -> None:
+        self.border_title = "Process Info"
+
+
+class Legend(Container):
+    def on_mount(self) -> None:
+        self.border_title = "Legend"
 
 
 class ProcessView(Grid):
+    can_focus = True
     stat: reactive[Stat | None] = reactive(None)
+
+    BINDINGS = [("escape", "go_back", "Go back to process selector")]
+
+    class GoBack(Message):
+        def __init__(self) -> None:
+            super().__init__()
+
+    def action_go_back(self) -> None:
+        self.stat = None
+        res = self.post_message(self.GoBack())
+        if not res:
+            self.log("Warning: failed to post ProcessView.GoBack message")
 
     def watch_stat(self, stat: Stat | None) -> None:
         if stat is not None:
             # Start worker to retrive maps and pagemap data
             self.get_process_data(stat.pid)
+        else:
+            self.query_one(VMBlock).maps = None
 
     @work(exclusive=True, thread=True)
     def get_process_data(self, pid: int) -> None:
@@ -222,7 +243,9 @@ class ProcessView(Grid):
         with TabbedContent(id="vm-tabbed-pane", initial="vm"):
             with TabPane("VM", id="vm"):
                 yield VMView(id="vm-view")
-        yield ProcessInfo(id="process-info")
+        with Container(id="process-container"):
+            yield ProcessInfo(id="process-info")
+            yield Legend(id="legend")
 
     def on_resize(self, event: Resize) -> None:
         """When resize occur, calculate optimum layout and switch to it"""
