@@ -1,7 +1,6 @@
-from curses import KEY_F10
 from typing import override
 
-from textual import events, work
+from textual import work
 from textual.app import App, ComposeResult
 from textual.containers import CenterMiddle
 from textual.reactive import reactive
