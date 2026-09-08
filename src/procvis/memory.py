@@ -204,7 +204,6 @@ class MemoryReader:
             raise exception
         parser = MemoryParser()
         map = parser.parse_output(output)
-        print(parser.curr)
         return map[pid]
 
 

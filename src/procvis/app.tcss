@@ -4,26 +4,53 @@ ProcessSelector {
   height: 80%;
 }
 
-.vertical-grid {
-  layout: grid;
-  grid-size: 2 1;
-  grid-columns: 65% 35%;
-}
-
-.horizontal-grid {
+ProcessView {
   layout: grid;
   grid-size: 1 2;
   grid-rows: 65% 35%;
+  grid-columns: 100%;
+}
+
+ProcessView.vertical {
+  layout: grid;
+  grid-size: 2 1;
+  grid-columns: 65% 35%;
+  grid-rows: 100%;
 }
 
 #vm-tabbed-pane {
-  border: round lightsteelblue;
+  border: round darkcyan;
   height: 100%;
   width: 100%;
 }
 
+#process-container {
+  layout: horizontal;
+}
+
+#process-container.vertical {
+  layout: vertical;
+}
+
 #process-info {
-  border: round mediumseagreen;
-  width: 100%;
-  height: 100%;
+  border-title-color: white;
+  border: round rebeccapurple;
+  width: 1fr;
+  padding: 1 2;
+}
+
+#legend {
+  border-title-color: white;
+  border: round darkolivegreen;
+  width: 1fr;
+  padding: 1 2;
+}
+
+InfoBlock {
+  height: 2;
+  margin-bottom: 1;
+}
+
+ProcessInfo > Horizontal {
+  margin-bottom: 1;
 }
