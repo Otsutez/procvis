@@ -18,7 +18,7 @@ from procvis.widgets import ProcessSelector, ProcessView
 
 class ProcessVisualiserApp(App):
     CSS_PATH = "app.tcss"
-    TITLE = "Ram Visualiser"
+    TITLE = "Process Visualiser"
     stats: reactive[dict[int, Stat]] = reactive({})
     timer: Timer | None = None
 
@@ -79,6 +79,8 @@ class ProcessVisualiserApp(App):
     def on_process_view_go_back(self, event: ProcessView.GoBack):
         content_switcher = self.query_one(ContentSwitcher)
         content_switcher.current = "process-selector"
+        if self.timer:
+            self.timer.resume()
         self.query_one(ProcessSelector).focus()
 
 

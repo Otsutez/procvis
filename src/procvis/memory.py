@@ -100,6 +100,10 @@ class ProcessData:
 class MemoryReader:
     PAGE_SIZE: int = os.sysconf("SC_PAGESIZE")
 
+    @staticmethod
+    def get_mem(rss: int) -> str:
+        return MemoryReader.format_bytes(rss * MemoryReader.PAGE_SIZE)
+
     # Source - https://stackoverflow.com/a/49361727
     # Posted by Pietro Battiston, modified by community. See post 'Timeline' for change history
     # Retrieved 2026-08-31, License - CC BY-SA 4.0

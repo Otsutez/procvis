@@ -12,7 +12,7 @@ from textual.worker import get_current_worker
 
 from procvis.memory import MemoryReader, ProcessData, Stat
 
-from .vm_view import VMBlock, VMView
+from .vm_view import VMBlock, VMType, VMView
 
 
 class InfoBlock(Vertical):
@@ -49,8 +49,10 @@ class ProcessInfo(Container):
             yield InfoBlock("Pid:", id="pid")
             yield InfoBlock("Program:", id="program")
         yield InfoBlock("Command: ", id="command")
-        yield InfoBlock("Threads: ", id="threads")
-        yield InfoBlock("User: ", id="user")
+        with Horizontal():
+            yield InfoBlock("Threads:", id="threads")
+            yield InfoBlock("User: ", id="user")
+        yield InfoBlock("Memory Usage:", id="mem")
 
     def watch_stat(self, stat: Stat | None) -> None:
         if stat is None:
@@ -60,6 +62,7 @@ class ProcessInfo(Container):
         self.query_one("#command", InfoBlock).info = stat.cmdline[:32]
         self.query_one("#threads", InfoBlock).info = str(stat.num_threads)
         self.query_one("#user", InfoBlock).info = stat.user
+        self.query_one("#mem", InfoBlock).info = MemoryReader.get_mem(stat.rss)
 
 
 class Legend(Container):
@@ -67,17 +70,23 @@ class Legend(Container):
         self.border_title = "Legend"
 
     LEGENDS: list[Text] = [
-        Text("■ ", style=VMBlock.CODE_COLOR) + Text("CODE", style="white"),
-        Text("■ ", style=VMBlock.RO_DATA_COLOR) + Text("RO Data", style="white"),
-        Text("■ ", style=VMBlock.WR_DATA_COLOR) + Text("WR Data", style="white"),
-        Text("■ ", style=VMBlock.HEAP_COLOR) + Text("Heap", style="white"),
-        Text("■ ", style=VMBlock.STACK_COLOR) + Text("Stack", style="white"),
-        Text("■ ", style=VMBlock.SHARED_LIBRARY_COLOR)
+        Text("■ ", style=VMBlock.color_map[VMType.CODE]) + Text("CODE", style="white"),
+        Text("■ ", style=VMBlock.color_map[VMType.RO_DATA])
+        + Text("RO Data", style="white"),
+        Text("■ ", style=VMBlock.color_map[VMType.WR_DATA])
+        + Text("WR Data", style="white"),
+        Text("■ ", style=VMBlock.color_map[VMType.HEAP]) + Text("Heap", style="white"),
+        Text("■ ", style=VMBlock.color_map[VMType.STACK])
+        + Text("Stack", style="white"),
+        Text("■ ", style=VMBlock.color_map[VMType.SHARED_LIB])
         + Text("Shared library", style="white"),
-        Text("■ ", style=VMBlock.ANONYMOUS_COLOR) + Text("Anonymous", style="white"),
-        Text("■ ", style=VMBlock.GUARD_COLOR) + Text("Guard", style="white"),
-        Text("■ ", style=VMBlock.VDSO_COLOR) + Text("VDSO", style="white"),
-        Text("■ ", style=VMBlock.UNMAPPED_COLOR) + Text("Unmapped", style="white"),
+        Text("■ ", style=VMBlock.color_map[VMType.ANONYMOUS])
+        + Text("Anonymous", style="white"),
+        Text("■ ", style=VMBlock.color_map[VMType.GUARD])
+        + Text("Guard", style="white"),
+        Text("■ ", style=VMBlock.color_map[VMType.VDSO]) + Text("VDSO", style="white"),
+        Text("■ ", style=VMBlock.color_map[VMType.UNMAPPED])
+        + Text("Unmapped", style="white"),
     ]
 
     @override

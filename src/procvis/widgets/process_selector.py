@@ -72,7 +72,7 @@ class ProcessSelector(DataTable):
             Text(str(stat.num_threads), style=self.COLOR_2, justify="right"),
             Text(stat.user[:10], style=self.COLOR_1),
             Text(
-                MemoryReader.format_bytes(stat.rss * MemoryReader.PAGE_SIZE),
+                MemoryReader.get_mem(stat.rss),
                 style=self.COLOR_2,
                 justify="right",
             ),
