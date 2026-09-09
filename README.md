@@ -5,6 +5,7 @@ A terminal-based tool for visualising process memory built with Python and Textu
 ## Requirements
 
 - [uv](https://docs.astral.sh/uv/)
+- make
 
 ## Running
 
@@ -29,7 +30,7 @@ uv run procvis
 
 ## Features
 
-Procvis provides a btop-like process selector. You can sort the selector based on pid, program name, command line, number of threads or user name.
+Procvis provides a btop-like process selector. You can sort the selector based on pid, program name, command line, number of threads, user name or memory usage.
 
 ![Image of procvis process selector](images/process-selector.png)
 
