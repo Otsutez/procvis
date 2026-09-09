@@ -15,12 +15,13 @@ test_data: list[tuple[str, dict[int, ProcessData]]] = [
             1: ProcessData(
                 maps_entries=[
                     MapsEntry(
-                        address=(0x7F3703E00000, 0x7F3704000000),
+                        start=0x7F3703E00000,
+                        end=0x7F3704000000,
                         perms="rw-s",
                         offset=0x12BC90000,
                         dev="00:06",
                         inode=338,
-                        pathname="",
+                        pathname="/dev/dri/renderD128",
                     )
                 ],
                 pagemap_entries={},
@@ -54,7 +55,8 @@ test_data: list[tuple[str, dict[int, ProcessData]]] = [
             1: ProcessData(
                 maps_entries=[
                     MapsEntry(
-                        address=(0x55EEA76C6000, 0x55EEA76DD000),
+                        start=0x55EEA76C6000,
+                        end=0x55EEA76DD000,
                         perms="r--p",
                         offset=0x0,
                         dev="103:02",
@@ -72,7 +74,8 @@ test_data: list[tuple[str, dict[int, ProcessData]]] = [
             1: ProcessData(
                 maps_entries=[
                     MapsEntry(
-                        address=(0x55EEA76C6000, 0x55EEA76DD000),
+                        start=0x55EEA76C6000,
+                        end=0x55EEA76DD000,
                         perms="r--p",
                         offset=0x0,
                         dev="103:02",
@@ -98,7 +101,8 @@ test_data: list[tuple[str, dict[int, ProcessData]]] = [
             1: ProcessData(
                 maps_entries=[
                     MapsEntry(
-                        address=(0x55EEA76C6000, 0x55EEA76DD000),
+                        start=0x55EEA76C6000,
+                        end=0x55EEA76DD000,
                         perms="r--p",
                         offset=0x0,
                         dev="103:02",
@@ -106,7 +110,8 @@ test_data: list[tuple[str, dict[int, ProcessData]]] = [
                         pathname="/usr/bin/zsh",
                     ),
                     MapsEntry(
-                        address=(0x55EEA76C6000, 0x55EEA76DD000),
+                        start=0x55EEA76C6000,
+                        end=0x55EEA76DD000,
                         perms="r--p",
                         offset=0x0,
                         dev="103:02",
