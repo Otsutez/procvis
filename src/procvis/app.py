@@ -83,6 +83,5 @@ class ProcessVisualiserApp(App):
         self.query_one(ProcessSelector).focus()
 
 
-if __name__ == "__main__":
-    app = ProcessVisualiserApp()
-    app.run()
+def main() -> None:
+    ProcessVisualiserApp().run()
